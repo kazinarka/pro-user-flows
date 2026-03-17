@@ -299,16 +299,24 @@ Home Page (/home) → "Connect My Wallet"
     ↓
 WalletConnector Modal
     │ Shows MetaMask & PhilSocial options
-    │ User clicks MetaMask
-    │   → window.ethereum.request({ method: 'eth_requestAccounts' })
-    │   → walletStore.connectWallet('Metamask', address)
-    │   → Stores connectedAddress in localStorage
-    │   → Stores provider type in localStorage
-    │   → useIsPayment.isPayment() check
-    │     ├── Payment needed → /payment
-    │     └── No payment → /dashboard
+    │
+    ├── User clicks MetaMask → ✅ FUNCTIONAL
+    │    │ connectInjectedWallet('Metamask')
+    │    │ → window.ethereum.request({ method: 'eth_requestAccounts' })
+    │    │ → walletStore.createInjectedWallet('Metamask', 'polygon')
+    │    │ → Stores connectedAddress in localStorage
+    │    │ → Stores provider type in localStorage
+    │    │ → isPayment() check
+    │    │   ├── Payment needed → /payment
+    │    │   └── No payment → /dashboard
+    │    └── Toast: "Connected to Metamask successfully!"
+    │
+    └── User clicks PhilSocial → ❌ NOT IMPLEMENTED
+         │ The PhilSocial wallet option is rendered but has NO @click handler
+         │ Clicking it does absolutely nothing
+         └── Purely cosmetic
     ↓
-Dashboard or Payment
+Dashboard or Payment (MetaMask only)
 ```
 
 ### MetaMask Event Handling (App.vue)
@@ -407,6 +415,25 @@ Dashboard Home (/dashboard/home)
     │   └── Account Reach Chart (followers vs non-followers)
     │
     └── "Download Report" button (⚠️ UI-ONLY — no handler)
+
+Header Bar (HeaderDashboard.vue) — top-right icons:
+    ├── User Avatar / IconUserCircle (⚠️ UI-ONLY)
+    │    │ Shows user's avatar (from S3) or default icon
+    │    │ Styled with cursor-pointer but has NO @click handler
+    │    │ No profile page exists — no route, no view, no component
+    │    └── Clicking does nothing
+    │
+    ├── Help Icon (⚠️ UI-ONLY)
+    │    │ Shows help.svg icon with cursor-pointer
+    │    │ Has NO @click handler, no help page, no route
+    │    └── Clicking does nothing
+    │
+    └── Search Bar → Search Results Pages (❌ NOT IMPLEMENTED)
+         │ Even if search were functional, there are no result pages:
+         │ ❌ No transaction detail/search results page
+         │ ❌ No user profile/search results page
+         │ ❌ No wallet address lookup page
+         └── None of these routes or views exist in the codebase
 ```
 
 ### Data Sources
@@ -1263,6 +1290,11 @@ The entire PhilAds feature is **commented out** in the router. The route definit
 | About | ❌ Placeholder | Shows "About" text only |
 | Help & Support | ❌ Placeholder | Shows "Help & Support" text only |
 | PhilAds (Advertising) | ❌ Commented Out | Router disabled, 14 components exist but are all UI-only/mock/placeholder |
+| User Profile Page | ❌ Not Implemented | User avatar / `IconUserCircle` in `HeaderDashboard.vue` is styled with `cursor-pointer` but has **no `@click` handler**. No dedicated profile view page exists — no route, no view component. The only way to view/edit profile is through Account Settings → Edit Account |
+| Help Page | ❌ Not Implemented | Help icon (`help.svg`) in `HeaderDashboard.vue` is styled with `cursor-pointer` but has **no `@click` handler**. No help page, FAQ, or documentation route exists |
+| Search Results Pages | ❌ Not Implemented | No routes or views exist for search results — no transaction search page, no user lookup page, no wallet address page. Even if the search bar were wired up, there are no destination pages to show results |
+| PhilSocial Wallet Connection | ⚠️ UI-Only | PhilSocial wallet option is shown in `WalletConnector.vue` alongside MetaMask, but has **no `@click` handler** — clicking it does nothing. Only MetaMask connection works |
+| Dashboard Search Bar | ⚠️ UI-Only | Text input + "Search" button in `HeaderDashboard.vue`. Placeholder says "Search for transaction, User ID, Wallet Address, etc" but the input has no `v-model`, no `@input`/`@keyup` handler, and the Search button has no `@click` handler. Completely non-functional — cosmetic only |
 | Dashboard "Download Report" | ⚠️ UI-Only | Button visible, no click handler |
 | Give Back Badges | ⚠️ Placeholder | Images at 30% opacity, not interactive |
 | Cause Delete Button | ⚠️ UI-Only | Button in edit view, no handler attached |
